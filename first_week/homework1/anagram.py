@@ -25,7 +25,10 @@ def find_value_by_key(key, data_list):
 def main(given_word):
     target = "".join(sorted(given_word))
 
-    with open("/Users/takeshiho0531//Desktop/STEP2023/first_week/homework1/sorted_words.txt", "r") as f:
+    with open(
+        "first_week/homework1/sorted_words.txt",
+        "r",
+    ) as f:
         sorted_words_set_list = f.read().splitlines()
 
     sorted_words_list = []
