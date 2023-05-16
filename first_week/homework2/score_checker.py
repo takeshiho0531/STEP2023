@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 
+import ast
 import sys
-from typing import Optional
 
 # How to use:
 #
@@ -17,20 +17,31 @@ from typing import Optional
 # ----------------------------------------
 SCORES = [1, 3, 2, 2, 1, 3, 3, 1, 1, 4, 4, 2, 2, 1, 1, 3, 4, 1, 1, 1, 2, 3, 3, 4, 3, 4]
 
-WORDS_FILE_PATH = "first_week/homework2/words.txt"
+SORTED_WORDS_FILE_PATH = "first_week/homework2/sorted_by_score_words.txt"
 
 
-def read_words(word_file_path):
-    words_list = []
-    with open(word_file_path) as f:
-        for line in f:
-            line = line.rstrip("\n")
-            words_list.append(line)
-    return words_list
+class TxtFileRreader:
+    @classmethod
+    def words(cls, word_file_path):
+        words_list = []
+        with open(word_file_path) as f:
+            for line in f:
+                line = line.rstrip("\n")
+                words_list.append(line)
+        return words_list
+
+    @classmethod
+    def tuples(cls, tuple_file_path):
+        tuples_list = []
+        with open(tuple_file_path) as f:
+            for line in f:
+                line = line.rstrip("\n")
+                tuples_list.append(ast.literal_eval(line))
+        return tuples_list
 
 
-def calculate_score(valid_word: str, data: str) -> Optional[int]:
-    """dataを並び替えた時に意味のある単語を含むか判定するして、その時のスコアを返す関数
+def is_valid(valid_word: str, data: str) -> bool:
+    """dataに意味のある単語を含むか判定してスコアを返す関数
 
     Args:
         valid_word (str): (並び替えた際に)意味のある単語となる文字列
@@ -39,39 +50,47 @@ def calculate_score(valid_word: str, data: str) -> Optional[int]:
     Returns:
         int : スコア
     """
-    score = 0
     data_table = [0] * 26
     for character in data:
         data_table[ord(character) - ord("a")] += 1
     # ex. data="happy" -> data_table=[1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0]
+
     for character in valid_word:
         if (
             data_table[ord(character) - ord("a")] == 0
         ):  # そもそもvalid_wordにその文字が含まれてなかったらだめ
-            score = 0
-            break
+            return False
         data_table[ord(character) - ord("a")] -= 1
-        score += SCORES[ord(character) - ord("a")]
+    return True
+
+
+def get_score(sorted_score_and_valid_words_list: list[tuple[int, str]], data: str) -> int:
+    """各データのスコアを計算する関数
+
+    Args:
+        sorted_score_valid_words_list (list[tuple[int, str]]): (valid_wordのスコア, valid_word)が集まってlistになったもの
+        data (str): スコアを計算したい文字列
+
+    Returns:
+        int : スコア
+    """
+
+    score = 0
+    for score_valid_word_set in sorted_score_and_valid_words_list:
+        if is_valid(score_valid_word_set[1], data):
+            score = score_valid_word_set[0]
+            return score
     return score
 
 
-def get_highest_scores(valid_words_list, data_list):
-    sum_score = 0
-    for data in data_list:
-        highest_score = 0
-        for valid_word in valid_words_list:
-            score = calculate_score(valid_word, data)
-            if highest_score < score:
-                highest_score = score
-        sum_score += highest_score
-    return sum_score
-
-
 def main(data_file_path):
-    valid_words_list = read_words(WORDS_FILE_PATH)
-    data_words_list = read_words(data_file_path)
-    highest_score = get_highest_scores(valid_words_list, data_words_list)
-    print("You answer is correct! Your score is %d." % highest_score)
+    sorted_score_and_valid_words_list = TxtFileRreader.tuples(SORTED_WORDS_FILE_PATH)
+    data_words_list = TxtFileRreader.words(data_file_path)
+    total_score = 0
+    for data in data_words_list:
+        total_score += get_score(sorted_score_and_valid_words_list, data)
+
+    print("You answer is correct! Your score is %d." % total_score)
 
 
 if __name__ == "__main__":
