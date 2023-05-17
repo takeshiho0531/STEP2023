@@ -1,4 +1,5 @@
 import sys
+import ast
 
 
 def judge_anagram(target, sorted_words_list):
@@ -22,7 +23,7 @@ def find_value_by_key(key, data_list):
     return False
 
 
-def main(given_word):
+def main(given_word: str) -> str:
     target = "".join(sorted(given_word))
 
     with open(
@@ -33,11 +34,13 @@ def main(given_word):
 
     sorted_words_list = []
     for sorted_words_set in sorted_words_set_list:
-        sorted_words_list.append(sorted_words_set[0])
+        sorted_words_list.append(ast.literal_eval(sorted_words_set)[0])
+    sorted_words_list= [sorted(s) for s in sorted_words_list]
+    print(sorted_words_list)
 
     anagram_judgment = judge_anagram(target, sorted_words_list)
     if anagram_judgment == -1:
-        return False
+        return "your word is not an anagram!"
     else:
         answer = find_value_by_key(target, sorted_words_set_list)
         return answer
