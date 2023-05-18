@@ -10,16 +10,17 @@ def sort_words_mapping(words_list: list) -> list[tuple[str, str]]:
 
 
 def main():
-    with open("~/Desktop/STEP2023/first_week/homework1/words.txt", "r") as f:
+    with open("first_week/homework1/words.txt", "r") as f:
         words_list = f.read().splitlines()
 
     sorted_words_set_list = sort_words_mapping(words_list)
+    sorted_set_list = sorted(sorted_words_set_list, key=lambda x: x[0])
 
     with open(
-        "~/Desktop/STEP2023/first_week/homework1/sorted_words.txt",
+        "first_week/homework1/sorted_words.txt",
         "w",
     ) as file:
-        for mapped_words in sorted_words_set_list:
+        for mapped_words in sorted_set_list:
             file.write(str(mapped_words) + "\n")
 
 

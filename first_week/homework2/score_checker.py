@@ -64,7 +64,9 @@ def is_valid(valid_word: str, data: str) -> bool:
     return True
 
 
-def get_score(sorted_score_and_valid_words_list: list[tuple[int, str]], data: str) -> int:
+def get_score(
+    sorted_score_and_valid_words_list: list[tuple[int, str]], data: str
+) -> int:
     """各データのスコアを計算する関数
 
     Args:

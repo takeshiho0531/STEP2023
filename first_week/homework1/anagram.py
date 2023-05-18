@@ -1,40 +1,37 @@
 import sys
-import ast
+from typing import Optional
 
 
+def get_anagram(
+    target: str, sorted_ori_set_list: list[tuple[str, str]]
+) -> Optional[str]:
+    """並び替えてできるvalid wordを返す関数
 
-def judge_anagram(target: str, sorted_ori_set_list): # TODO: sorted_ori_set_listの型定義 # sorted_ori_set_list: list[tuple(str, str)
+    Args:
+        target (str): anagramかどうか判定したい文字列
+        sorted_ori_set_list (list[tuple[str, str]]): sorted_words.txtの中身をそのままlistにしたもの。
+                                                     tuple内の1つ目の要素は2つ目の要素の文字列をアルファベット順に並べたもの
 
-    print(sorted_ori_set_list, "sorted_ori_set_list", )
-    sorted_list= [item[0] for item in sorted_ori_set_list]
+    Returns:
+        Optional[str]: valid word(anagramでなければNone)
+    """
+    sorted_list = [item[0] for item in sorted_ori_set_list]
     ori_list = [item[1] for item in sorted_ori_set_list]
-    print(sorted_list, "sorted_list")
 
     low = 0
     high = len(sorted_list) - 1
-    print(high)
-    sorted_target="".join(sorted(target))
-    print(sorted_target, "sorted_target")
+    sorted_target = "".join(sorted(target))
 
     while low <= high:
         mid = (low + high) // 2
-        print(mid, "mid")
         if sorted_list[mid] == sorted_target:
             return ori_list[mid]
 
         elif sorted_list[mid] < sorted_target:
-            print(sorted_list[mid])
             low = mid + 1
         else:
             high = mid - 1
-    return -1
-
-
-def find_value_by_key(key, data_list):
-    for data in data_list:
-        if data[0] == key:
-            return data[1]
-    return False
+    return None
 
 
 def main(given_word: str) -> str:
@@ -45,17 +42,14 @@ def main(given_word: str) -> str:
         "r",
     ) as f:
         sorted_words_set_list = f.read().splitlines()
-    print(sorted_words_set_list)
-    # print(ast.literal_eval(sorted_words_set_list))
     result_list = [eval(item) for item in sorted_words_set_list]
 
-
-    # for sorted_words_set in sorted_words_set_list:
-        # print(ast.literal_eval(sorted_words_set))
-    anagram_judgment = judge_anagram(target, result_list)
-    if anagram_judgment == -1:
+    answer = get_anagram(target, result_list)
+    if answer is None:
         return "your word is not an anagram!"
     else:
-            # answer = find_value_by_key(target, sorted_words_set_list)
-        # answer = anagram_judgment(target, sorted_words_set_list)
-        return anagram_judgment
+        return answer
+
+
+if __name__ == "__main__":
+    main(sys.argv[1])
