@@ -1,5 +1,4 @@
-# from first_week.homework2.score_checker import read_words
-from score_checker import read_words  # TODO: なぜ上のでうまく行かないのか
+from first_week.homework2.score_checker import TxtFileRreader
 
 SCORES = [
     1,
@@ -44,7 +43,7 @@ def calculate_valid_word_score(valid_word):
 
 
 def save_sorted_dictionary():
-    words_list = read_words(WORDS_FILE_PATH)
+    words_list = TxtFileRreader.words(WORDS_FILE_PATH)
 
     score_word_set_list = []
 

@@ -1,11 +1,11 @@
 # week1 homework2
 
 ## [wip] 問題
- 
+
 ## 実行方法
 以下を実行すると、各テキストファイル(`large.txt`, `medium.txt`, `small.txt` )の単語の合計スコアが返ってくる。
 ```
-$STEP2023 python3 first_week/homework2/score_checker.py first_week/homework2/sorted_by_score_words.txt first_week/homework2/small.txt
+$STEP2023  python3 first_week/homework2/score_checker.py first_week/homework2/small.txt
 ```
 
 ## ファイル構成

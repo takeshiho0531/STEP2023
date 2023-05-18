@@ -16,6 +16,7 @@ import sys
 # | 4 points | j, k, q, x, z             |
 # ----------------------------------------
 SCORES = [1, 3, 2, 2, 1, 3, 3, 1, 1, 4, 4, 2, 2, 1, 1, 3, 4, 1, 1, 1, 2, 3, 3, 4, 3, 4]
+ALPHABET = "abcdefghijklmnopqrstuvwxyz"
 
 SORTED_WORDS_FILE_PATH = "first_week/homework2/sorted_by_score_words.txt"
 
@@ -52,10 +53,13 @@ def is_valid(valid_word: str, data: str) -> bool:
     """
     data_table = [0] * 26
     for character in data:
+        assert character in ALPHABET, "dataにアルファベット以外の文字が含まれています"
         data_table[ord(character) - ord("a")] += 1
+
     # ex. data="happy" -> data_table=[1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0]
 
     for character in valid_word:
+        assert character in ALPHABET, "valid_wordにアルファベット以外の文字が含まれています"
         if (
             data_table[ord(character) - ord("a")] == 0
         ):  # そもそもvalid_wordにその文字が含まれてなかったらだめ
