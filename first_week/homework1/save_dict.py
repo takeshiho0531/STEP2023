@@ -23,6 +23,27 @@ def main():
         for mapped_words in sorted_set_list:
             file.write(str(mapped_words) + "\n")
 
+def make_dict():
+    """単語並び替え後の文字列をkeyとして、valueをlistとして並び替え前の文字を格納していく辞書を作り、それをjsonで保存する
+    """
+    with open("first_week/homework1/words.txt", "r") as f:
+        words_list = f.read().splitlines()
+
+    sorted_words_set_list = sort_words_mapping(words_list)
+
+    word_dict={}
+
+    for item in sorted_words_set_list:
+        default_value=[]
+        key, value=item
+        word_dict.setdefault(key, default_value)
+        word_dict[key].append(value)
+
+    sorted_word_dict=dict(sorted(word_dict.items(), key=lambda x: x[0]))
+
+    with open('first_week/homework1/words.json', 'w') as file:
+        json.dump(sorted_word_dict, file, indent=4)
 
 if __name__ == "__main__":
-    main()
+    # main()
+    make_dict()
