@@ -63,7 +63,7 @@ class HashTable:
         assert type(key) == str
         self.check_size() # Note: Don't remove this code.
         bucket_index = calculate_hash(key) % self.bucket_size
-        item = self.buckets[bucket_index]
+        item = self.buckets[bucket_index]  # ここが何してるんかわからない
         while item:
             if item.key == key:
                 item.value = value
@@ -102,6 +102,7 @@ class HashTable:
         item = self.buckets[bucket_index]
         while item:
             if item.key == key:
+                # どうやってdeleteするん？？
                 self.item_count -= 1
                 return True
             item = item.next
