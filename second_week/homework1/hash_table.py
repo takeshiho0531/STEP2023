@@ -1,4 +1,6 @@
-import random, sys, time
+import random
+import sys
+import time
 
 ###########################################################################
 #                                                                         #
@@ -8,6 +10,7 @@ import random, sys, time
 # The goal is to implement the data structure yourself.                   #
 #                                                                         #
 ###########################################################################
+
 
 # Hash function.
 #
@@ -43,7 +46,6 @@ class Item:
 #                 stores a linked list of items whose hash value is |hash|.
 # |self.item_count|: The total number of items in the hash table.
 class HashTable:
-
     # Initialize the hash table.
     def __init__(self):
         # Set the initial bucket size to 97. A prime number is chosen to reduce
@@ -61,7 +63,7 @@ class HashTable:
     #               and the value is updated.
     def put(self, key, value):
         assert type(key) == str
-        self.check_size() # Note: Don't remove this code.
+        self.check_size()  # Note: Don't remove this code.
         bucket_index = calculate_hash(key) % self.bucket_size
         item = self.buckets[bucket_index]  # ここが何してるんかわからない
         while item:
@@ -81,7 +83,7 @@ class HashTable:
     #               returned. Otherwise, (None, False) is returned.
     def get(self, key):
         assert type(key) == str
-        self.check_size() # Note: Don't remove this code.
+        self.check_size()  # Note: Don't remove this code.
         bucket_index = calculate_hash(key) % self.bucket_size
         item = self.buckets[bucket_index]
         while item:
@@ -97,19 +99,36 @@ class HashTable:
     #               otherwise.
     def delete(self, key):
         assert type(key) == str
-        self.check_size() # Note: Don't remove this code.
+        self.check_size()  # Note: Don't remove this code.
         bucket_index = calculate_hash(key) % self.bucket_size
         item = self.buckets[bucket_index]
-        while item:
-            if item.key == key:
-                # どうやってdeleteするん？？
+        if item is None:
+            return False
+        if item.key == key:
+            if item.next:
+                self.buckets[bucket_index] = item.next
+            else:
+                self.buckets[bucket_index] = None
+            item.key=None
+            item.value=None
+            item=None
+            self.item_count -= 1
+            return True
+        while item.next:
+            next_item = item.next
+            if next_item.key == key:
+                if next_item.next:
+                    item.next = next_item.next
+                else:
+                    item.next = None
+                next_item = None
                 self.item_count -= 1
                 return True
-            item = item.next
+            next_item.next
         return False
-        #------------------------#
+        # ------------------------#
         # Write your code here!  #
-        #------------------------#
+        # ------------------------#
         # pass
 
     # Return the total number of items in the hash table.
@@ -122,8 +141,7 @@ class HashTable:
     #
     # Note: Don't change this function.
     def check_size(self):
-        assert (self.bucket_size < 100 or
-                self.item_count >= self.bucket_size * 0.3)
+        assert self.bucket_size < 100 or self.item_count >= self.bucket_size * 0.3
 
 
 # Test the functional behavior of the hash table.
