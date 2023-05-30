@@ -109,9 +109,9 @@ class HashTable:
                 self.buckets[bucket_index] = item.next
             else:
                 self.buckets[bucket_index] = None
-            item.key=None
-            item.value=None
-            item=None
+            item.key = None
+            item.value = None
+            item = None
             self.item_count -= 1
             return True
         while item.next:
