@@ -9,6 +9,9 @@ from calculation.calculate import calculate
     [
         ("1+2", eval("1+2")),
         ("1.0+2.1-3", eval("1.0+2.1-3")),
+        ("1*2", eval("1*2")),
+        ("1+2*3", eval("1+2*3"))
+        
     ],
 )
 def test_main(line, expected):

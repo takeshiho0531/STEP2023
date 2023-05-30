@@ -6,8 +6,8 @@ from calculation.read_letter import (
     read_multiply,
     read_plus,
 )
-"""
 
+"""
 from read_letter import (
     read_digits,
     read_divide,
@@ -66,41 +66,54 @@ def calculate(line):
         token = token_list[idx]
         if token["type"] == "MULTIPLY":
             assert idx != 0
-            previous = token_list[idx - 1]
-            subsequent = token_list[idx + 1]
-            assert (previous["type"] == "NUMBER") and (subsequent["type"] == "NUMBER")
-            token[idx - 1] = {
-                "type": "NUMBER",
-                "value": previous["value"] * subsequent["value"],
-                "next_idx": None,
-            }
-            token_list[idx] = None
-            token_list[idx + 1] = None
-            idx = idx + 2
+            tmp_i = 1
+            while tmp_i<=idx:
+                if token_list[idx-tmp_i]["type"]=="NUMBER":
+                    previous = token_list[idx - tmp_i]
+                    break
+                tmp_i+=1
+
+            else:
+                subsequent = token_list[idx + 1]
+                assert (previous["type"] == "NUMBER") and (subsequent["type"] == "NUMBER")
+                print("prev", previous["value"])
+                print("next", subsequent["value"])
+                token_list[idx - 1] = {
+                    "type": "NUMBER",
+                    "value": previous["value"] * subsequent["value"],
+                    "next_idx": None,
+                }
+                token_list[idx] = {"type": "PADDING", "value": None, "next_idx":None}
+                token_list[idx + 1] = {"type": "PADDING", "value": None, "next_idx":None}
+                idx = idx + 2
 
         elif token["type"] == "DIVIDE":
             assert idx != 0
-            previous = token_list[idx - 1]
-            subsequent = token_list[idx + 1]
-            assert (previous["type"] == "NUMBER") and (subsequent["type"] == "NUMBER")
-            token[idx - 1] = {
-                "type": "NUMBER",
-                "value": previous["value"] / subsequent["value"],
-                "next_idx": None,
-            }
+            tmp_i = 1
+            while tmp_i<=idx:
+                if token_list[idx-tmp_i]["type"]=="NUMBER":
+                    previous = token_list[idx - tmp_i]
+                    break
+                tmp_i+=1
+            # previous = token_list[idx - 1]
+            else:
+                subsequent = token_list[idx + 1]
+                assert (previous["type"] == "NUMBER") and (subsequent["type"] == "NUMBER")
+                token[idx - 1] = {
+                    "type": "NUMBER",
+                    "value": previous["value"] / subsequent["value"],
+                    "next_idx": None,
+                }
 
-            token_list[idx] = None
-            token_list[idx + 1] = None
-            idx = idx + 2
+                token_list[idx] = None
+                token_list[idx + 1] = None
+                idx = idx + 2
+        # elif token["type"]=="PADDING":
+
         else:
             idx+=1
 
     else:
-        for i in range(len(token_list)):
-            if token_list[i] is None:
-                token_list = token_list.pop(i)
-
-
         idx = 0
         answer = 0
         print("len(token_list)", len(token_list))
@@ -118,6 +131,7 @@ def calculate(line):
                     answer += token["value"]
                 elif previous["type"] == "MINUS":
                     answer -= token["value"]
+            # elif token["type"]=="PADDING":
 
             idx+=1
 
@@ -139,6 +153,11 @@ def run_test():
     print("==== Test started! ====")
     test("1+2")
     test("1.0+2.1-3")
+    test("1*2-2")
+    test("1+2*3-7")
+    test("1+2+3+4*5*6")
+    #test("1+2+3*4/5")
     print("==== Test finished! ====\n")
 
 run_test()
+
