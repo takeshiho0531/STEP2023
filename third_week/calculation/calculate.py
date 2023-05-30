@@ -55,125 +55,57 @@ def tokenize(line):
         print("抜けた")
         return token_list
 
-def get_multiply_devide_token(token_list, start_idx):
-    # start_idx: typeはNUMBER
-    multiply_devide_token_list=[]
-
-    idx=start_idx
-    while (idx<len(token_list)) and ((token_list[idx]["type"]=="MULTIPLY") or (token_list[idx]["type"]=="DIVIDE")):
-        multiply_devide_token_list.append(token_list[idx])
-        idx+=1
-    else:
-        next_idx=idx
-        return multiply_devide_token_list, next_idx
-
-def calculate_multiply_devide(multiply_devide_token_list, start_idx):
-    value = multiply_devide_token_list[0]
-    idx=start_idx  # start_idxはNUMBERからスタート
-    while idx<len(multiply_devide_token_list):
-        token=multiply_devide_token_list[idx]
-        prev=multiply_devide_token_list[idx-1]
-        if prev["type"]=="MULTIPLY":
-            value*=token["value"]
-        elif prev["type"]=="DIVIDE":
-            value/=token["value"]
-        idx+=2
-    else:
-        return value, idx-1
-
-
 
 def calculate(line):
     # 括弧ある場合はまず除く。
     token_list = tokenize(line)
     token_list.insert(0, {'type': 'PLUS'})
     print("token_list_calculate", token_list)
-    idx = 0
-    new_token_list=[]
 
-    while idx < len(token_list):
-        token = token_list[idx]
+    answer=0
+    idx=0
+
+    while idx<len(token_list):
+        token=token_list[idx]
         if (token["type"]=="MULTIPLY") or (token["type"]=="DIVIDE"):
-            start_idx=idx-1
-            multiply_devide_token_list, next_idx=get_multiply_devide_token(token_list, start_idx)
-
-
-
-
-
-
-        if token["type"] == "MULTIPLY":
-            assert idx != 0
-            previous =token_list[idx-1]
-            subsequent = token_list[idx + 1]
-            print("prev_type", previous["type"])
-            assert (previous["type"] == "NUMBER") or (previous["type"] =="PADDING")
-            assert (subsequent["type"] == "NUMBER") or (subsequent["type"] =="PADDING")
-
-            print("prev", previous["value"])
-            print("next", subsequent["value"])
-            token_list[idx - 1] = {
-                "type": "NUMBER",
-                "value": previous["value"] * subsequent["value"],
-                "next_idx": None,
-            }
-            token_list[idx] = {"type": "PADDING", "value": previous["value"] * subsequent["value"]}
-            token_list[idx + 1] = {"type": "PADDING", "value": previous["value"] * subsequent["value"]}
-            idx = idx + 2
-
-        elif token["type"] == "DIVIDE":
-            assert idx != 0
-            tmp_i = 1
-            while tmp_i<=idx:
-                if token_list[idx-tmp_i]["type"]=="NUMBER":
-                    previous = token_list[idx - tmp_i]
-                    break
-                tmp_i+=1
-            # previous = token_list[idx - 1]
+            assert idx>=2
+            first_idx=idx-1
+            tmp=token_list[idx-1]["value"]
+            if token_list[idx+1]["type"]=="MULTIPLY":
+                tmp*=token_list[idx+1]["value"]
+            elif token_list[idx+1]["type"]=="DIVIDE":
+                tmp/=token_list[idx+1]["value"]
+            idx+=2
+            while (idx<len(token_list)) and ((token_list[idx]["type"]=="MULTIPLY") or (token_list[idx]["type"]=="DIVIDE")):
+                if token_list[idx+1]["type"]=="MULTIPLY":
+                    tmp*=token_list[idx+1]["value"]
+                elif token_list[idx+1]["type"]=="DIVIDE":
+                    tmp/=token_list[idx+1]["value"]
+                idx+=2
             else:
-                if tmp_i>idx:
-                    pass
-
-                subsequent = token_list[idx + 1]
-                assert (previous["type"] == "NUMBER") and (subsequent["type"] == "NUMBER")
-                token[idx - 1] = {
-                    "type": "NUMBER",
-                    "value": previous["value"] / subsequent["value"],
-                    "next_idx": None,
-                }
-
-                token_list[idx] = None
-                token_list[idx + 1] = None
-                idx = idx + 2
-        # elif token["type"]=="PADDING":
-
+                if token_list[first_idx-1]["type"]=="PLUS":
+                    answer+=tmp
+                    print("answer_plus", tmp)
+                elif token_list[first_idx-1]["type"]=="MINUS":
+                    answer-=tmp
+                    print("answer_minus", answer)
+        elif (token["type"]=="PLUS"):
+            if (idx+2<len(token_list)) and ((token_list[idx+2]["type"]=="MULTIPLY") or (token_list[idx+2]["type"]=="DIVIDE")):
+                idx+=2
+            else:
+                answer+=token_list[idx+1]["value"]
+                idx+=1
+        elif (token["type"]=="MINUS"):
+            if (idx+2<len(token_list)) and ((token_list[idx+2]["type"]=="MULTIPLY") or (token_list[idx+2]["type"]=="DIVIDE")):
+                idx+=2
+            else:
+                answer-=token_list[idx+1]["value"]
+                idx+=1
         else:
             idx+=1
-
     else:
-        idx = 0
-        answer = 0
-        print("len(token_list)", len(token_list))
-        while idx < len(token_list):
-            token = token_list[idx]
-            print("token", token)
+        return answer
 
-            if token["type"] == "NUMBER":
-                if idx == 0:
-                    previous = {"type": "PLUS", "next_idx": 1}
-                else:
-                    previous = token_list[idx - 1]
-
-                if previous["type"] == "PLUS":
-                    answer += token["value"]
-                elif previous["type"] == "MINUS":
-                    answer -= token["value"]
-            # elif token["type"]=="PADDING":
-
-            idx+=1
-
-        else:
-            return answer
 
 def test(line):
     #tokens = tokenize(line)
