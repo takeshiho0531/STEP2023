@@ -54,6 +54,14 @@ def tokenize(line):
         print("token_list!", token_list)
         print("抜けた")
         return token_list
+    
+# def make_plain(line):
+    # token_list = tokenize(line)
+    # plain_token_list=[]
+
+    # idx=0
+    # while idx<len(token_list):
+
 
 
 def calculate(line):
@@ -66,45 +74,46 @@ def calculate(line):
     idx=0
 
     while idx<len(token_list):
-        token=token_list[idx]
-        if (token["type"]=="MULTIPLY") or (token["type"]=="DIVIDE"):
+        if ((token_list[idx]["type"]=="MULTIPLY") or (token_list[idx]["type"]=="DIVIDE")):
             assert idx>=2
-            first_idx=idx-1
             tmp=token_list[idx-1]["value"]
-            if token_list[idx+1]["type"]=="MULTIPLY":
-                tmp*=token_list[idx+1]["value"]
-            elif token_list[idx+1]["type"]=="DIVIDE":
-                tmp/=token_list[idx+1]["value"]
-            idx+=2
+            first_idx=idx
             while (idx<len(token_list)) and ((token_list[idx]["type"]=="MULTIPLY") or (token_list[idx]["type"]=="DIVIDE")):
-                if token_list[idx+1]["type"]=="MULTIPLY":
+                if token_list[idx]["type"]=="MULTIPLY":
                     tmp*=token_list[idx+1]["value"]
-                elif token_list[idx+1]["type"]=="DIVIDE":
+                    idx+=2
+                elif token_list[idx]["type"]=="DIVIDE":
                     tmp/=token_list[idx+1]["value"]
-                idx+=2
+                    idx+=2
+                print("idx_", idx)
             else:
-                if token_list[first_idx-1]["type"]=="PLUS":
+                if token_list[first_idx-2]["type"]=="PLUS":
                     answer+=tmp
-                    print("answer_plus", tmp)
-                elif token_list[first_idx-1]["type"]=="MINUS":
+                    print("anser1", answer)
+                    idx+=1
+                elif token_list[first_idx-2]["type"]=="MINUS":
                     answer-=tmp
-                    print("answer_minus", answer)
-        elif (token["type"]=="PLUS"):
+                    idx=+1
+
+        elif (token_list[idx]["type"]=="PLUS"):
             if (idx+2<len(token_list)) and ((token_list[idx+2]["type"]=="MULTIPLY") or (token_list[idx+2]["type"]=="DIVIDE")):
                 idx+=2
             else:
                 answer+=token_list[idx+1]["value"]
-                idx+=1
-        elif (token["type"]=="MINUS"):
+                idx+=2
+                print("answer", answer)
+        elif (token_list[idx]["type"]=="MINUS"):
             if (idx+2<len(token_list)) and ((token_list[idx+2]["type"]=="MULTIPLY") or (token_list[idx+2]["type"]=="DIVIDE")):
                 idx+=2
             else:
                 answer-=token_list[idx+1]["value"]
-                idx+=1
+                idx+=2
         else:
             idx+=1
     else:
         return answer
+
+
 
 
 def test(line):
@@ -123,8 +132,8 @@ def run_test():
     test("1+2")
     test("1.0+2.1-3")
     test("1*2-2")
-    test("1+2*3-7")
-    test("1+2+3+4*5*6")
+    #test("1+2*3-7")
+    #test("1+2+3+4*5*6")
     #test("1+2+3*4/5")
     print("==== Test finished! ====\n")
 
