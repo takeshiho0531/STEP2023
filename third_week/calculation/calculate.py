@@ -1,4 +1,4 @@
-
+"""
 from calculation.read_letter import (
     read_digits,
     read_divide,
@@ -6,8 +6,8 @@ from calculation.read_letter import (
     read_multiply,
     read_plus,
 )
-
 """
+
 from read_letter import (
     read_digits,
     read_divide,
@@ -15,7 +15,7 @@ from read_letter import (
     read_multiply,
     read_plus,
 )
-"""
+
 
 digits = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."]
 
@@ -60,61 +60,69 @@ def calculate(line):
     # 括弧ある場合はまず除く。
     token_list = tokenize(line)
     print("token_list_calculate", token_list)
-    #idx = 0
-
-    #while idx < len(token_list):
-        #token = token_list[idx]
-        #if token["type"] == "MULTIPLY":
-            #assert idx != 0
-            #previous = token_list[idx - 1]
-            #subsequent = token_list[idx + 1]
-            #assert (previous["type"] == "NUMBER") and (subsequent["type"] == "NUMBER")
-            #token[idx - 1] = {
-                #"type": "NUMBER",
-                #"value": previous["value"] * subsequent["value"],
-                #"next_idx": None,
-            #}
-        #elif token["type"] == "DIVIDE":
-            #assert idx != 0
-            #previous = token_list[idx - 1]
-            #subsequent = token_list[idx + 1]
-            #assert (previous["type"] == "NUMBER") and (subsequent["type"] == "NUMBER")
-            #token[idx - 1] = {
-                #"type": "NUMBER",
-                #"value": previous["value"] / subsequent["value"],
-                #"next_idx": None,
-            #}
-
-        #token_list[idx] = None
-        #token_list[idx + 1] = None
-        #idx = idx + 2
-
-    #for i in range(len(token_list)):
-        #if token_list[i] is None:
-            #token_list = token_list.pop(i)
-
-
     idx = 0
-    answer = 0
-    print("len(token_list)", len(token_list))
+
     while idx < len(token_list):
         token = token_list[idx]
-        print("token", token)
+        if token["type"] == "MULTIPLY":
+            assert idx != 0
+            previous = token_list[idx - 1]
+            subsequent = token_list[idx + 1]
+            assert (previous["type"] == "NUMBER") and (subsequent["type"] == "NUMBER")
+            token[idx - 1] = {
+                "type": "NUMBER",
+                "value": previous["value"] * subsequent["value"],
+                "next_idx": None,
+            }
+            token_list[idx] = None
+            token_list[idx + 1] = None
+            idx = idx + 2
 
-        if token["type"] == "NUMBER":
-            if idx == 0:
-                previous = {"type": "PLUS", "next_idx": 1}
-            else:
-                previous = token_list[idx - 1]
+        elif token["type"] == "DIVIDE":
+            assert idx != 0
+            previous = token_list[idx - 1]
+            subsequent = token_list[idx + 1]
+            assert (previous["type"] == "NUMBER") and (subsequent["type"] == "NUMBER")
+            token[idx - 1] = {
+                "type": "NUMBER",
+                "value": previous["value"] / subsequent["value"],
+                "next_idx": None,
+            }
 
-            if previous["type"] == "PLUS":
-                answer += token["value"]
-            elif previous["type"] == "MINUS":
-                answer -= token["value"]
-        
-        idx+=1
+            token_list[idx] = None
+            token_list[idx + 1] = None
+            idx = idx + 2
+        else:
+            idx+=1
 
-    return answer
+    else:
+        for i in range(len(token_list)):
+            if token_list[i] is None:
+                token_list = token_list.pop(i)
+
+
+        idx = 0
+        answer = 0
+        print("len(token_list)", len(token_list))
+        while idx < len(token_list):
+            token = token_list[idx]
+            print("token", token)
+
+            if token["type"] == "NUMBER":
+                if idx == 0:
+                    previous = {"type": "PLUS", "next_idx": 1}
+                else:
+                    previous = token_list[idx - 1]
+
+                if previous["type"] == "PLUS":
+                    answer += token["value"]
+                elif previous["type"] == "MINUS":
+                    answer -= token["value"]
+
+            idx+=1
+
+        else:
+            return answer
 
 def test(line):
     #tokens = tokenize(line)
