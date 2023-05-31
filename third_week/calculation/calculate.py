@@ -5,6 +5,7 @@ from calculation.read_letter import (
     read_minus,
     read_multiply,
     read_plus,
+    get_brackets_idx
 )
 
 """
@@ -14,6 +15,7 @@ from read_letter import (
     read_minus,
     read_multiply,
     read_plus,
+    get_brackets_idx
 )
 
 
@@ -54,15 +56,17 @@ def tokenize(line):
         print("token_list!", token_list)
         print("抜けた")
         return token_list
-    
+
 def make_plain(line):
     token_list = tokenize(line)
+    token_list.insert(0, {'type': 'PLUS'})
     plain_token_list=[]
 
     idx=0
     while idx<len(token_list):
         if ((token_list[idx]["type"]=="MULTIPLY") or (token_list[idx]["type"]=="DIVIDE")):
             value=token_list[idx-1]["value"]
+            signal=token_list[idx-2]
             while (idx<len(token_list)) and ((token_list[idx]["type"]=="MULTIPLY") or (token_list[idx]["type"]=="DIVIDE")):
                 if token_list[idx]["type"]=="MULTIPLY":
                     value*=token_list[idx+1]["value"]
@@ -72,7 +76,9 @@ def make_plain(line):
                     idx+=2
             else:
                 new_token={"type": "NUMBER", "value": value}
+                plain_token_list.append(signal)
                 plain_token_list.append(new_token)
+                token_list=token_list[:idx-2]+token_list[idx:]
         elif (token_list[idx]["type"]=="PLUS"):
             plain_token_list.append(token_list[idx])
             idx+=1
@@ -82,18 +88,42 @@ def make_plain(line):
         elif (token_list[idx]["type"]=="NUMBER"):
             if (idx+1<len(token_list)) and ((token_list[idx+1]["type"]=="MULTIPLY") or (token_list[idx+1]["type"]=="DEVIDE")):
                 idx+=1
+            elif (2<=idx+1<len(token_list)) and ((token_list[idx-1]["type"]=="MULTIPLY") or (token_list[idx-1]["type"]=="DEVIDE")):
+                idx+=1
             else:
                 plain_token_list.append(token_list[idx])
                 idx+=1
     else:
+        print("plain_token_list", plain_token_list)
         return plain_token_list
 
+def solve_brackets(line):
+    brackets_idx_list=get_brackets_idx(line)
+    print("brackets_idx_list",brackets_idx_list)
+    if len(brackets_idx_list)==0:
+        return calculate(line)
+    else:
+        brackets_pair_num=len(brackets_idx_list)/2
+        print("brackets_pair_num",brackets_pair_num)
+        new_line=""
+        for i in range(int(brackets_pair_num)):
+            line_in_brackets=line[brackets_idx_list[0]+1:brackets_idx_list[1]]
+            tmp_answer=calculate(line_in_brackets)
+            new_line+=line[:brackets_idx_list[0]]
+            new_line+=str(tmp_answer)
+            new_line+=line[brackets_idx_list[1]+1:]
+            line=new_line
+            print("line_koshin", line)
+            brackets_idx_list=get_brackets_idx(line)
+            new_line=""
+        # 最初と最後が括弧で括られてることはないと考えて。
+        answer=calculate(line)
+        return answer
 
 
 def calculate(line):
-    # 括弧ある場合はまず除く。
     plain_token_list = make_plain(line)
-    plain_token_list.insert(0, {'type': 'PLUS'})
+    #plain_token_list.insert(0, {'type': 'PLUS'})
     print("token_list_calculate_plain", plain_token_list)
 
     answer=0
@@ -116,12 +146,12 @@ def calculate(line):
 
 def test(line):
     #tokens = tokenize(line)
-    actual_answer = calculate(line)
+    actual_answer = solve_brackets(line)
     expected_answer = eval(line)
     if abs(actual_answer - expected_answer) < 1e-8:
-        print("PASS! (%s = %f)" % (line, expected_answer))
+        print("******PASS! (%s = %f)" % (line, expected_answer))
     else:
-        print("FAIL! (%s should be %f but was %f)" % (line, expected_answer, actual_answer))
+        print("******FAIL! (%s should be %f but was %f)" % (line, expected_answer, actual_answer))
 
 
 # Add more tests to this function :)
@@ -133,6 +163,10 @@ def run_test():
     test("1+2*3-7")
     test("1+2+3+4*5*6")
     test("1+2+3*4/5")
+    test("(1+2)+3")
+    test("3/3")
+    #test("3/(1+2)")
+    #test("(3.0+4*(2-1))/5")
     print("==== Test finished! ====\n")
 
 run_test()

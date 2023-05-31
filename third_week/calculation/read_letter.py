@@ -75,11 +75,13 @@ def get_brackets_idx(line):
     brackets_idx_list = []
     tmp_list = []
     idx = 0
-    for i in range(len(line)):
+    for idx in range(len(line)):
         if line[idx] == "(":
             tmp_list.append(idx)
         elif line[idx] == ")":
             start_bracket_idx = tmp_list[-1]
             tmp_list = tmp_list.pop(-1)
-            brackets_idx_list.append((start_bracket_idx, idx))
+            brackets_idx_list.append(start_bracket_idx)
+            brackets_idx_list.append(idx)
+            #brackets_idx_list.append((start_bracket_idx, idx))
     return brackets_idx_list
