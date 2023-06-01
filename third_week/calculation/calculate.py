@@ -57,45 +57,65 @@ def tokenize(line):
         print("抜けた")
         return token_list
 
-def make_plain(line):
-    token_list = tokenize(line)
-    token_list.insert(0, {'type': 'PLUS'})
-    plain_token_list=[]
-
-    idx=0
-    while idx<len(token_list):
-        if ((token_list[idx]["type"]=="MULTIPLY") or (token_list[idx]["type"]=="DIVIDE")):
-            value=token_list[idx-1]["value"]
-            signal=token_list[idx-2]
-            while (idx<len(token_list)) and ((token_list[idx]["type"]=="MULTIPLY") or (token_list[idx]["type"]=="DIVIDE")):
-                if token_list[idx]["type"]=="MULTIPLY":
-                    value*=token_list[idx+1]["value"]
-                    idx+=2
-                elif token_list[idx]["type"]=="DIVIDE":
-                    value/=token_list[idx+1]["value"]
-                    idx+=2
-            else:
-                new_token={"type": "NUMBER", "value": value}
-                plain_token_list.append(signal)
-                plain_token_list.append(new_token)
-                token_list=token_list[:idx-2]+token_list[idx:]
-        elif (token_list[idx]["type"]=="PLUS"):
-            plain_token_list.append(token_list[idx])
-            idx+=1
-        elif (token_list[idx]["type"]=="MINUS"):
-            plain_token_list.append(token_list[idx])
-            idx+=1
-        elif (token_list[idx]["type"]=="NUMBER"):
-            if (idx+1<len(token_list)) and ((token_list[idx+1]["type"]=="MULTIPLY") or (token_list[idx+1]["type"]=="DEVIDE")):
-                idx+=1
-            elif (2<=idx+1<len(token_list)) and ((token_list[idx-1]["type"]=="MULTIPLY") or (token_list[idx-1]["type"]=="DEVIDE")):
-                idx+=1
-            else:
-                plain_token_list.append(token_list[idx])
-                idx+=1
+def solve_multiply_divide(multiply_divide_token_list):
+    value=multiply_divide_token_list[0]["value"]
+    idx=1
+    while idx<len(multiply_divide_token_list):
+        if multiply_divide_token_list[idx]=="MULTIPLY":
+            value*=multiply_divide_token_list[idx+1]["value"]
+            idx+=2
+        elif multiply_divide_token_list[idx]=="DEVIDE":
+            value/=multiply_divide_token_list[idx+1]["value"]
+            idx+=2
     else:
-        print("plain_token_list", plain_token_list)
-        return plain_token_list
+        return {"type": "NUMBER", "value": value}
+
+
+def make_plus_minus_only(token_list):
+    idx=0
+    print("token_list!!!", token_list)
+    token_list.append({"type": "PLUS"})
+
+    new_token_list=[]
+
+
+    tmp_token_list=[]
+    print("tkoen_list", token_list)
+    # while token in token_list:
+    while idx in range(len(token_list)):
+        token=token_list[idx]
+        print("token", token)
+        if token["type"]=="NUMBER":
+            tmp_token_list.append(token)
+            print("tmp_token_list", tmp_token_list)
+            idx+=1
+            continue
+        elif token["type"]=="MULTIPLY":
+            tmp_token_list.append(token)
+            idx+=1
+            continue
+        elif token["type"]=="DIVIDE":
+            tmp_token_list.append(token)
+            idx+=1
+            continue
+        else:
+            print("tmp_token_list",  tmp_token_list)
+            value=solve_multiply_divide(tmp_token_list)
+            print("value", value)
+            term_token={"type": "NUMBER", "value": value["value"]}
+            print("term_token", term_token)
+            # print("new_token_list", new_token_list)
+            new_token_list.append(term_token)
+            new_token_list.append(token)
+            tmp_token_list=[]
+            idx+=1
+            continue
+    else:
+        print("new_token_list...",new_token_list)
+        new_token_list=new_token_list[:-1]
+        print("new_token_list.....",new_token_list)
+        return new_token_list
+
 
 def solve_brackets(line):
     brackets_idx_list=get_brackets_idx(line)
@@ -121,9 +141,9 @@ def solve_brackets(line):
         return answer
 
 
-def calculate(line):
-    plain_token_list = make_plain(line)
-    #plain_token_list.insert(0, {'type': 'PLUS'})
+def calculate(plain_token_list):
+    #plain_token_list = make_plain(line)
+    plain_token_list.insert(0, {'type': 'PLUS'})
     print("token_list_calculate_plain", plain_token_list)
 
     answer=0
@@ -132,12 +152,15 @@ def calculate(line):
     while idx<len(plain_token_list):
         if plain_token_list[idx]["type"]=="NUMBER":
             idx+=1
+            continue
         elif plain_token_list[idx]["type"]=="PLUS":
             answer+=plain_token_list[idx+1]["value"]
             idx+=2
+            continue
         elif plain_token_list[idx]["type"]=="MINUS":
             answer-=plain_token_list[idx+1]["value"]
             idx+=2
+            continue
     else:
         return answer
 
@@ -145,8 +168,11 @@ def calculate(line):
 
 
 def test(line):
-    #tokens = tokenize(line)
-    actual_answer = solve_brackets(line)
+    tokens = tokenize(line)
+    print("tokens!!", tokens)
+    new_token_list=make_plus_minus_only(tokens)
+    print("new_token_list!", new_token_list)
+    actual_answer=calculate(new_token_list)
     expected_answer = eval(line)
     if abs(actual_answer - expected_answer) < 1e-8:
         print("******PASS! (%s = %f)" % (line, expected_answer))
