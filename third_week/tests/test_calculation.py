@@ -1,5 +1,6 @@
 import pytest
 from calculation.tokenize import tokenize, tokenize_number
+from calculation.calculate import make_plus_minus_only
 
 
 @pytest.mark.parametrize(
@@ -44,3 +45,12 @@ def test_tokenize_number(line, expected, expected_increment):
 def test_tokenize(line, expected):
     token_list = tokenize(line)
     assert token_list == expected
+
+
+@pytest.mark.parametrize(('line', 'expected'), [
+    ("1+2*8", [{"type": "NUMBER", "value": 1}, {"type": "PLUS"}, {"type": "NUMBER", "value": 16}]),
+    #("1+2*8*4+5", [{"type": "NUMBER", "value": 1}, {"type": "PLUS"}, {"type": "NUMBER", "value": 64}, {"type": "PLUS"}, {"type": "NUMBER", "value": 5}])
+])
+def test_make_plus_minus_only(line, expected):
+    flat_list=make_plus_minus_only(line)
+    assert expected==flat_list
