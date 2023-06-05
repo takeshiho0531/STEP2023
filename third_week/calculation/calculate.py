@@ -2,7 +2,6 @@ from calculation.tokenize import tokenize
 
 
 def multiply_devide(token_list):
-    print("token_list*", token_list)
     token_list.insert(0, {"type": "MULTIPLY"})
     value = 1
     index = 0
@@ -24,7 +23,6 @@ def multiply_devide(token_list):
 def make_plus_minus_only(line):
     token_list = tokenize(line)
     token_list.append({"type": "PLUS"})
-    print(token_list)
     flat_list = []
     index = 0
     tmp_token_list = []
@@ -32,7 +30,6 @@ def make_plus_minus_only(line):
         token = token_list[index]
         if token["type"] == "NUMBER":
             tmp_token_list.append(token)
-            print("tmp_token_list", tmp_token_list)
             index += 1
             token = token_list[index]
             continue
@@ -43,11 +40,9 @@ def make_plus_minus_only(line):
             continue
 
         if (token["type"] == "PLUS") or (token["type"] == "MINUS"):
-            print("tmp_token_list", tmp_token_list)
             tmp_token = multiply_devide(tmp_token_list)
             flat_list.append(tmp_token)
             flat_list.append(token)
-            print(flat_list)
             index += 1
             tmp_token_list = []
             continue
@@ -56,5 +51,20 @@ def make_plus_minus_only(line):
     return flat_list
 
 
-def calculate():
-    pass
+def calculate(line):
+    #token_list=tokenize(line)
+    flat_token_list=make_plus_minus_only(line)
+    index=0
+    answer=0
+    flat_token_list.insert(0, {"type":"PLUS"})
+    while index<len(flat_token_list):
+        if flat_token_list[index]["type"]=="PLUS":
+            answer+=flat_token_list[index+1]["value"]
+            index+=2
+            continue
+        if flat_token_list[index]["type"]=="MINUS":
+            answer-=flat_token_list[index+1]["value"]
+            index+=2
+            continue
+    else:
+        return answer
