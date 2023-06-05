@@ -1,5 +1,5 @@
 import pytest
-from calculation.calculate import make_plus_minus_only, calculate
+from calculation.calculate import calculate, make_plus_minus_only
 from calculation.tokenize import tokenize, tokenize_number
 
 
@@ -90,16 +90,23 @@ def test_tokenize(line, expected):
     ],
 )
 def test_make_plus_minus_only(line, expected):
-    flat_list = make_plus_minus_only(line)
+    token_list = tokenize(line)
+    flat_list = make_plus_minus_only(token_list)
     assert expected == flat_list
 
-@pytest.mark.parametrize(("line", "expected"),[
-    ("1", 1),
-    ("1+2*8", 17),
-    ("1+2*8*4/8", 1+2*8*4/8),
-    ("1+2*8*4+5", 1+2*8*4+5),
-    ("1+2*8*4-5", 1+2*8*4-5)
-])
+
+@pytest.mark.parametrize(
+    ("line", "expected"),
+    [
+        ("1", 1),
+        ("1+2*8", 17),
+        ("1+2*8*4/8", 1 + 2 * 8 * 4 / 8),
+        ("1+2*8*4+5", 1 + 2 * 8 * 4 + 5),
+        ("1+2*8*4-5", 1 + 2 * 8 * 4 - 5),
+    ],
+)
 def test_calculate(line, expected):
-    answer=calculate(line)
-    assert answer==expected
+    token_list = tokenize(line)
+    flat_list = make_plus_minus_only(token_list)
+    answer = calculate(flat_list)
+    assert answer == expected
