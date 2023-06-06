@@ -42,9 +42,11 @@ def tokenize_devide():
     increment = 1
     return {"type": "DEVIDE"}, increment
 
+
 def tokenize_left_bracket():
     increment = 1
     return {"type": "LEFT_BRACKET"}, increment
+
 
 def tokenize_right_bracket():
     increment = 1
