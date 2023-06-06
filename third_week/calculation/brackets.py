@@ -24,16 +24,12 @@ def solve_outermost_brackets(token_list):
     outermost_left_bracket_list, outermost_right_bracket_list = get_outermost_brackets(
         token_list
     )
-    print("brackets_index", outermost_left_bracket_list, outermost_right_bracket_list)
     assert len(outermost_left_bracket_list) == len(outermost_right_bracket_list)
 
     if len(outermost_left_bracket_list) == 0:  # 全ての括弧が解消してる時
-        print(token_list)
         # token_list=tokenize(token_list)
         flat_list = make_plus_minus_only(token_list)
         value = calculate(flat_list)
-        print("value", value)
-        print("token", {"type": "NUMBER", "value": value})
         return [{"type": "NUMBER", "value": value}]
 
     else:
@@ -46,11 +42,8 @@ def solve_outermost_brackets(token_list):
             token_list_in_brackets = token_list[
                 (outermost_left_bracket_list[i] + 1) : outermost_right_bracket_list[i]
             ]
-            print("token_list_in_brackets", token_list_in_brackets)
             solved_token_list = solve_outermost_brackets(token_list_in_brackets)
-            print("solved_token_list", solved_token_list)
             new_token_list += solved_token_list
-            print("new_token_list", new_token_list)
             if (i + 1) < len(outermost_left_bracket_list):  # まだ最後の外側括弧ペアに至ってない時
                 new_token_list += token_list[
                     (outermost_right_bracket_list[i] + 1) : (

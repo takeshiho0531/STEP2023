@@ -45,7 +45,6 @@ from calculation.tokenize import tokenize_with_brackets
     ],
 )
 def test_tokenize_with_brackets(line, expected):
-    print("line", line)
     token_list = tokenize_with_brackets(line)
     assert token_list == expected
 
@@ -63,6 +62,5 @@ def test_tokenize_with_brackets(line, expected):
 )
 def test_solve_outermost_brackets(line, expected):
     token_list = tokenize_with_brackets(line)
-    print(token_list)
     brackets_solved_token_list = solve_outermost_brackets(token_list)
     assert brackets_solved_token_list == expected
