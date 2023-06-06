@@ -1,5 +1,6 @@
 import pytest
 from calculation.tokenize import tokenize_with_brackets
+from calculation.brackets import solve_outermost_brackets
 
 @pytest.mark.parametrize(
     ("line", "expected"),
@@ -15,3 +16,15 @@ def test_tokenize_with_brackets(line, expected):
     print("line", line)
     token_list = tokenize_with_brackets(line)
     assert token_list == expected
+
+@pytest.mark.parametrize(("line", "expected"),[
+    ("1+(2*3)", [{"type": "NUMBER", "value": 1}, {"type": "PLUS"},{"type": "NUMBER", "value": 6}]),
+    ("(1+2)*3", [{"type": "NUMBER", "value": 3}, {"type": "MULTIPLY"},{"type": "NUMBER", "value": 3}]),
+    #("(1+(2*3))", [{"type": "NUMBER", "value": 7}]),
+    ("((1+(2*3)))*4", [{"type": "NUMBER", "value": 7}, {"type": "MULTIPLY"},{"type": "NUMBER", "value": 4}]),
+])
+def test_solve_outermost_brackets(line, expected):
+    token_list=tokenize_with_brackets(line)
+    print(token_list)
+    brackets_solved_token_list=solve_outermost_brackets(token_list)
+    assert brackets_solved_token_list==expected

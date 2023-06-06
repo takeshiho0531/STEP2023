@@ -51,6 +51,7 @@ def test_tokenize(line, expected):
     ("line", "expected"),
     [
         ("1", [{"type": "NUMBER", "value": 1}]),
+        ("2*8", [{"type": "NUMBER", "value": 16}]),
         (
             "1+2*8",
             [
@@ -99,6 +100,7 @@ def test_make_plus_minus_only(line, expected):
     ("line", "expected"),
     [
         ("1", 1),
+        ("2*8", 16),
         ("1+2*8", 17),
         ("1+2*8*4/8", 1 + 2 * 8 * 4 / 8),
         ("1+2*8*4+5", 1 + 2 * 8 * 4 + 5),
