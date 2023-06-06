@@ -71,30 +71,49 @@ class Wikipedia:
         print()
 
     def BFS(self, start, goal):
+        """startのnodeとgoalのnodeを与えた時にstartとgoalを繋ぐ道があるのかを判定して、あった場合はgoalに辿り着くまでに最後に通ったnodeを返す
+        """
         d=deque()
         visited={}
 
         d.append(start)
         visited[start]=True
+        search_num=0
 
 
         while not d.empty():
             node=d.pop()
             if node==goal:
-                return "Found"
+                return node
             for child in self.links[node]:
                 if not child in visited:
-                    visited[child]=True
+                    visited[child]=search_num
+                    search_num+=1
                     d.append(child)
-        return "Not found"
+
+        return None
 
 
     # Find the shortest path.
     # |start|: The title of the start page.
     # |goal|: The title of the goal page.
     def find_shortest_path(self, start, goal):
-        #####
-        pass
+        path=[]
+        path.append(goal)
+
+        last_node=goal
+        while last_node!=start:
+            if self.BFS(start, goal=last_node) is None:
+                break
+            else:
+                last_node=self.BFS(start, goal=last_node)
+                path.append(last_node)
+        else:
+            if last_node==start:
+                path.append(start)
+                return path.reverse()
+            else:
+                exit(1)
 
 
 
