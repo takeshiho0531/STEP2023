@@ -78,18 +78,18 @@ class Wikipedia:
 
         d.append(start)
         visited[start]=True
-        search_num=0
 
 
         while not d.empty():
-            node=d.pop()
+            node_pair=d.pop()
+            node=node_pair[1]
+            last_node=node_pair[0]
             if node==goal:
-                return node
+                return last_node
             for child in self.links[node]:
                 if not child in visited:
-                    visited[child]=search_num
-                    search_num+=1
-                    d.append(child)
+                    visited[child]=True
+                    d.append((node, child))
 
         return None
 
