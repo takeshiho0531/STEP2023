@@ -73,6 +73,7 @@ class Wikipedia:
         print()
 
     def BFS(self, start, goal):
+        print(self.links)
         d = deque()
         start = self.get_id_from_title(start)
         goal = self.get_id_from_title(goal)
@@ -118,12 +119,59 @@ class Wikipedia:
                 path.append(last_node_id)
                 node_id = last_node_id
 
+    def is_approximately_equal(self, list1, list2, threshold):
+        if len(list1) != len(list2):
+            return False
+
+        for i in range(len(list1)):
+            diff = abs(list1[i] - list2[i])
+            if diff > threshold:
+                return False
+
+        return True
+
+
+    def calculate_page_ranks(self):
+        nodes_list=list(self.links.keys())
+        page_ranks_dict={}
+        for node in nodes_list:
+            page_ranks_dict[node]=1
+        update_log=[]
+
+        index=0
+        while (index==0 or index==1) or(self.is_approximately_equal(update_log[index-1], update_log[index-2], 0.01)==False):
+            for i in range(len(nodes_list)):
+                node=nodes_list[i]
+                child_num=len(self.links[node])
+                # 隣接ページ self.links[nodes]
+                for child in self.links[node]:
+                    page_ranks_dict[child]+=page_ranks_dict[node]*0.85/child_num
+                page_ranks_dict[node]=page_ranks_dict[node]*0.15
+            update_log.append(list(page_ranks_dict.values()))
+            index+=1
+            print(sum(list(page_ranks_dict.values())))
+            print(page_ranks_dict.values())
+            continue
+        else:
+            print(page_ranks_dict)
+            return page_ranks_dict
+
+
     # Calculate the page ranks and print the most popular pages.
     def find_most_popular_pages(self):
-        # ------------------------#
-        # Write your code here!  #
-        # ------------------------#
-        pass
+        page_ranks_dict=self.calculate_page_ranks()
+        sorted_list=sorted(page_ranks_dict.items(), key=lambda x: x[1])
+        top10_list=sorted_list[:10]
+
+        title_top10_list=[]
+        for i in range(len(top10_list)):
+            node_id=top10_list[i][0]
+            node_title=self.titles[node_id]
+            title_top10_list.append((node_title, top10_list[i][1]))
+        
+        top10_dict={key: value for key, value in title_top10_list}
+        print(top10_dict)
+
 
     # Do something more interesting!!
     def find_something_more_interesting(self):
@@ -141,7 +189,7 @@ if __name__ == "__main__":
     wikipedia = Wikipedia(sys.argv[1], sys.argv[2])
     wikipedia.find_longest_titles()
     # wikipedia.find_most_linked_pages()
-    wikipedia.find_shortest_path("渋谷", "パレートの法則")
-    # wikipedia.BFS("A", "C")
+    #wikipedia.find_shortest_path("渋谷", "パレートの法則")
+    #wikipedia.BFS("A", "C")
     # wikipedia.find_shortest_path("A", "C")
-    # wikipedia.find_most_popular_pages()
+    wikipedia.find_most_popular_pages()
