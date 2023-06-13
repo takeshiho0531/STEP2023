@@ -64,3 +64,22 @@ class HashTable:
                 item = item.next
                 prev = item
         return False
+
+    def rehash(self, expand):
+        if expand:
+            new_bucket_size = self.next_prime(self.bucket_size * 2)
+        else:
+            new_bucket_size = self.next_prime(self.bucket_size // 2)
+        new_buckets = [None] * new_bucket_size
+
+        for bucket in self.buckets:
+            item = bucket
+            while item:
+                next_item = item.next
+                new_bucket_index = calculate_hash(item.key) % new_bucket_size
+                # item.next = new_buckets[new_bucket_index] これ何
+                new_buckets[new_bucket_index] = item
+                item = next_item
+
+        self.buckets = new_buckets
+        self.bucket_size = new_bucket_size
